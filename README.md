@@ -1,0 +1,3 @@
+- 👋 Hi, I’m @Honestspeculators
+- 👀 I’m interested in case cups
+- 📫 How to reach me honestspeculators@gmail.com
