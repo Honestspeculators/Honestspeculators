@@ -8,7 +8,7 @@
       p.t steppers with maps!
         v-stepper(v-model='stepper', vertical)
           v-stepper-step(:complete='stepper > 1', step='1') {{ $t("stepper.h1") }}
-            small Summarize if needed
+            small {{ $t("stepper.d1") }}
           v-stepper-content(step='1')
             v-card.mb-12(color='grey lighten-1', height='70vh')
               div
@@ -54,6 +54,7 @@
                   indeterminate
                   color="white")
           v-stepper-step(:complete='stepper > 2', step='2') {{ $t("stepper.h2") }}
+            small {{ $t("stepper.d2") }}
           v-stepper-content(step='2')
             v-card.mb-12(color='grey lighten-1', height='200px')
               p.t sliders
@@ -61,6 +62,7 @@
             v-btn(color='primary', @click='stepper = 3') Continue
             v-btn(text, @click='stepper = 1') Cancel
           v-stepper-step(:complete='stepper > 3', step='3') {{ $t("stepper.h3") }}
+            small {{ $t("stepper.d3") }}
           v-stepper-content(step='3')
             v-card.mb-12(color='grey lighten-1', height='200px')
             v-btn(color='primary', @click='stepper = 1') Finish
