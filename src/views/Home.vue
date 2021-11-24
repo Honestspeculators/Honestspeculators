@@ -24,7 +24,7 @@
                   gmap-info-window(
                     :position='infoWindowPos',
                     :opened='infoWinOpen',
-                    @closeclick='infoWinOpen = false',
+                    @closeclick='infoWinOpen = false; closeInfoWindow()',
                     :options='infoOptions'
                   )
                   gmap-marker(
@@ -32,10 +32,17 @@
                     :key='i',
                     :position='google && m.position',
                     :clickable='true',
-                    @click='toggleInfoWindow(m, i)',
+                    @click='toggleInfoWindow(m, i)'
                   )
-              v-btn.mt-2(color='primary', @click='stepper = 2') Continue
-              v-btn.mt-2(text) Cancel
+          transition(name='slide-fade', mode='in-out', style='z-index: 10001')
+            v-layout(
+              justify-center, align-center
+              v-if='isInfoWindowOpened',
+              style='position: absolute !important; margin-top: -13vh; z-index: 100; width: 100%'
+            )
+              v-spacer
+              v-btn(x-large color='primary', @click='stepper = 2; isInfoWindowOpened = false') Continue
+              v-spacer
           v-stepper-step(:complete='stepper > 2', step='2') {{ $t("stepper.h2") }}
           v-stepper-content(step='2')
             v-card.mb-12(color='grey lighten-1', height='200px')
@@ -104,21 +111,34 @@ export default class Home extends Vue {
   infoWindowPos = null
   infoWinOpenMine = false
   infoWinOpen = false
-  currentMidx:any = null
+  currentMidx: any = null
   currentInfo = undefined
+
+  isInfoWindowOpened = false
 
   markers = [
     {
       position: { lat: 59.94, lng: 30.35 },
-      infoText: '<button onclick="alert(\'learn brainfuck\')">BrainFuck!</button>',
+      infoText:
+        '<button onclick="alert(\'learn brainfuck\')">BrainFuck!</button>',
+    },
+    {
+      position: { lat: 59.92, lng: 30.25 },
+      infoText: '<button onclick="alert(\'потрачено\')">Deep diving!</button>',
     },
   ]
+
+  closeInfoWindow() {
+    this.isInfoWindowOpened = false
+    console.log('closed')
+  }
 
   toggleInfoWindow(marker: any, idx: number) {
     this.infoWindowPos = marker.position
     this.infoOptions.content = marker.infoText
 
     //check if its the same marker that was selected if yes toggle
+    this.isInfoWindowOpened = true
     if (this.currentMidx == idx) {
       this.infoWinOpen = !this.infoWinOpen
     }
@@ -129,10 +149,7 @@ export default class Home extends Vue {
     }
   }
 
-  mounted() {
-    console.log(process.env)
-    console.log(process.env.VUE_APP_GMAPS)
-  }
+  mounted() {}
 }
 </script>
 
@@ -152,5 +169,16 @@ small {
 
 p {
   font-family: 'Gilroy Medium' !important;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.2s ease-out;
+}
+.slide-fade-leave-active {
+  transition: all 0.2s ease-in;
+}
+.slide-fade-enter, .slide-fade-leave-to
+		/* .slide-fade-leave-active до версии 2.1.8 */ {
+  transform: translateY(100vh);
 }
 </style>
