@@ -30,8 +30,30 @@
             v-card.mb-12(color='grey lighten-1', height='200px')
             v-btn(color='primary', @click='stepper = 1') Continue
             v-btn(text, @click='stepper = 3') Cancel
-      p and 
-        a(href="https://www.imdb.com/title/tt0469494/") blood
+      p and
+        a(href='https://www.imdb.com/title/tt0469494/') blood
+      p and maps
+        google-map#map(
+          v-if='google',
+          :center='mapCenter',
+          :zoom='mapZoom',
+          ref='mapRef',
+          style='height: 100vh; width: 100vw; clear: left; z-index: 1; bottom: 0',
+        )
+          gmap-info-window(
+            :position='infoWindowPos',
+            :opened='infoWinOpen',
+            @closeclick='infoWinOpen = false',
+            :options='infoOptions'
+          )
+          gmap-marker(
+            v-for='(m, i) in markers1',
+            :key='i',
+            :position='google && m.position',
+            :clickable='true',
+            @click='toggleInfoWindow(m, i)',
+            :icon='getIcon(m)'
+          )
 </template>
 
 <script lang="ts">
@@ -40,10 +62,23 @@ import axios from 'axios'
 import Component from 'vue-class-component'
 import { i18n } from '@/plugins/i18n'
 import { namespace } from 'vuex-class'
+import * as VueGoogleMaps from 'vue2-google-maps'
+import {gmapApi} from 'vue2-google-maps'
+import {loaded} from 'vue2-google-maps'
 import { User } from '@/models/User'
 
 const AppStore = namespace('AppStore')
 const SnackbarStore = namespace('SnackbarStore')
+
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: process.env.VUE_APP_GMAPS,
+    v: '3.47',
+  },
+  installComponents: false
+})
+Vue.component('google-map', VueGoogleMaps.Map)
+Vue.component('gmap-info-window', VueGoogleMaps.InfoWindow);
 
 @Component({})
 export default class Home extends Vue {
@@ -52,6 +87,27 @@ export default class Home extends Vue {
 
   slider = 45
   stepper = 1
+  mapCenter = {lat: 59.95, lng: 30.3}
+  mapZoom = 12
+  get google() {
+    return gmapApi
+  } 
+
+  infoOptions = undefined
+  infoOptionsM = {
+    content: '',
+    //optional: offset infowindow so it visually sits nicely on top of our marker
+  }
+  infoWindowPos = null
+  infoWinOpenMine = false
+  infoWinOpen = false
+  currentMidx = null
+  currentInfo = undefined
+
+  mounted() {
+    console.log(process.env)
+    console.log(process.env.VUE_APP_GMAPS)
+  }
 }
 </script>
 
