@@ -1,59 +1,54 @@
 <template lang="pug">
-.v-container.pa-4
+.v-container.pa-md-4.pt-xs-2.pl-xs-0.pr-xs-0(style='padding: 0 !important')
   // Main content
   v-layout(column, justify-center, align-center)
-    h1.h Hello there!
+    h1.h {{ $t("header") }}
     v-container(justify-left)
-      h3.t there'll be:
+      h3.t {{ $t("descriprion") }}
       p.t sliders
         v-slider(v-model='slider', thumb-label='always')
-      p.t steppers
+      p.t steppers with maps!
         v-stepper(v-model='stepper', vertical)
-          v-stepper-step(:complete='stepper > 1', step='1') Select an app
+          v-stepper-step(:complete='stepper > 1', step='1') {{ $t("stepper.h1") }}
             small Summarize if needed
           v-stepper-content(step='1')
-            v-card.mb-12(color='grey lighten-1', height='200px')
-            v-btn(color='primary', @click='stepper = 2') Continue
-            v-btn(text) Cancel
-          v-stepper-step(:complete='stepper > 2', step='2') Configure analytics for this app
+            v-card.mb-12(color='grey lighten-1', height='70vh')
+              div
+                google-map#map(
+                  v-if='google',
+                  :center='mapCenter',
+                  :zoom='mapZoom',
+                  ref='mapRef',
+                  style='height: 70vh; width: 100vw; z-index: 1'
+                )
+                  gmap-info-window(
+                    :position='infoWindowPos',
+                    :opened='infoWinOpen',
+                    @closeclick='infoWinOpen = false',
+                    :options='infoOptions'
+                  )
+                  gmap-marker(
+                    v-for='(m, i) in markers',
+                    :key='i',
+                    :position='google && m.position',
+                    :clickable='true',
+                    @click='toggleInfoWindow(m, i)',
+                  )
+              v-btn.mt-2(color='primary', @click='stepper = 2') Continue
+              v-btn.mt-2(text) Cancel
+          v-stepper-step(:complete='stepper > 2', step='2') {{ $t("stepper.h2") }}
           v-stepper-content(step='2')
             v-card.mb-12(color='grey lighten-1', height='200px')
             v-btn(color='primary', @click='stepper = 3') Continue
             v-btn(text, @click='stepper = 1') Cancel
-          v-stepper-step(:complete='stepper > 3', step='3') Select an ad format and name ad unit
+          v-stepper-step(:complete='stepper > 3', step='3') {{ $t("stepper.h3") }}
           v-stepper-content(step='3')
             v-card.mb-12(color='grey lighten-1', height='200px')
-            v-btn(color='primary', @click='stepper = 4') Continue
-            v-btn(text, @click='stepper = 2') Cancel
-          v-stepper-step(step='4') View setup instructions
-          v-stepper-content(step='4')
-            v-card.mb-12(color='grey lighten-1', height='200px')
             v-btn(color='primary', @click='stepper = 1') Continue
-            v-btn(text, @click='stepper = 3') Cancel
+            v-btn(text, @click='stepper = 2') Cancel
       p and
         a(href='https://www.imdb.com/title/tt0469494/') blood
       p and maps
-        google-map#map(
-          v-if='google',
-          :center='mapCenter',
-          :zoom='mapZoom',
-          ref='mapRef',
-          style='height: 100vh; width: 100vw; clear: left; z-index: 1; bottom: 0',
-        )
-          gmap-info-window(
-            :position='infoWindowPos',
-            :opened='infoWinOpen',
-            @closeclick='infoWinOpen = false',
-            :options='infoOptions'
-          )
-          gmap-marker(
-            v-for='(m, i) in markers1',
-            :key='i',
-            :position='google && m.position',
-            :clickable='true',
-            @click='toggleInfoWindow(m, i)',
-            :icon='getIcon(m)'
-          )
 </template>
 
 <script lang="ts">
@@ -63,8 +58,8 @@ import Component from 'vue-class-component'
 import { i18n } from '@/plugins/i18n'
 import { namespace } from 'vuex-class'
 import * as VueGoogleMaps from 'vue2-google-maps'
-import {gmapApi} from 'vue2-google-maps'
-import {loaded} from 'vue2-google-maps'
+import { gmapApi } from 'vue2-google-maps'
+import { loaded } from 'vue2-google-maps'
 import { User } from '@/models/User'
 
 const AppStore = namespace('AppStore')
@@ -75,10 +70,11 @@ Vue.use(VueGoogleMaps, {
     key: process.env.VUE_APP_GMAPS,
     v: '3.47',
   },
-  installComponents: false
+  installComponents: false,
 })
 Vue.component('google-map', VueGoogleMaps.Map)
-Vue.component('gmap-info-window', VueGoogleMaps.InfoWindow);
+Vue.component('gmap-info-window', VueGoogleMaps.InfoWindow)
+Vue.component('gmap-marker', VueGoogleMaps.Marker)
 
 @Component({})
 export default class Home extends Vue {
@@ -87,13 +83,20 @@ export default class Home extends Vue {
 
   slider = 45
   stepper = 1
-  mapCenter = {lat: 59.95, lng: 30.3}
+  mapCenter = { lat: 59.95, lng: 30.3 }
   mapZoom = 12
   get google() {
     return gmapApi
-  } 
+  }
 
-  infoOptions = undefined
+  infoOptions = {
+    content: '',
+    //optional: offset infowindow so it visually sits nicely on top of our marker
+    pixelOffset: {
+      width: 0,
+      height: -35,
+    },
+  }
   infoOptionsM = {
     content: '',
     //optional: offset infowindow so it visually sits nicely on top of our marker
@@ -101,8 +104,30 @@ export default class Home extends Vue {
   infoWindowPos = null
   infoWinOpenMine = false
   infoWinOpen = false
-  currentMidx = null
+  currentMidx:any = null
   currentInfo = undefined
+
+  markers = [
+    {
+      position: { lat: 59.94, lng: 30.35 },
+      infoText: '<button onclick="alert(\'learn brainfuck\')">BrainFuck!</button>',
+    },
+  ]
+
+  toggleInfoWindow(marker: any, idx: number) {
+    this.infoWindowPos = marker.position
+    this.infoOptions.content = marker.infoText
+
+    //check if its the same marker that was selected if yes toggle
+    if (this.currentMidx == idx) {
+      this.infoWinOpen = !this.infoWinOpen
+    }
+    //if different marker set infowindow to open and reset current marker index
+    else {
+      this.infoWinOpen = true
+      this.currentMidx = idx
+    }
+  }
 
   mounted() {
     console.log(process.env)
