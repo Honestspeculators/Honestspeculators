@@ -5,8 +5,6 @@
     h1.h {{ $t("header") }}
     v-container(justify-left)
       h3.t {{ $t("descriprion") }}
-      p.t sliders
-        v-slider(v-model='slider', thumb-label='always')
       p.t steppers with maps!
         v-stepper(v-model='stepper', vertical)
           v-stepper-step(:complete='stepper > 1', step='1') {{ $t("stepper.h1") }}
@@ -41,21 +39,34 @@
               style='position: absolute !important; margin-top: -13vh; z-index: 100; width: 100%'
             )
               v-spacer
-              v-btn(x-large color='primary', @click='stepper = 2; isInfoWindowOpened = false') Continue
+              v-btn(x-large color='primary', @click='transition2second()') Continue
               v-spacer
+          v-dialog(
+            v-model="transition2secondDialog"
+            hide-overlay
+            persistent
+            width="300").mt-12
+            v-card(
+              color="primary"
+              dark)
+              v-card-text Fetching avaliable parking slots
+                v-progress-linear(
+                  indeterminate
+                  color="white")
           v-stepper-step(:complete='stepper > 2', step='2') {{ $t("stepper.h2") }}
           v-stepper-content(step='2')
             v-card.mb-12(color='grey lighten-1', height='200px')
+              p.t sliders
+                v-slider.mt-6(v-model='slider', thumb-label='always')
             v-btn(color='primary', @click='stepper = 3') Continue
             v-btn(text, @click='stepper = 1') Cancel
           v-stepper-step(:complete='stepper > 3', step='3') {{ $t("stepper.h3") }}
           v-stepper-content(step='3')
             v-card.mb-12(color='grey lighten-1', height='200px')
-            v-btn(color='primary', @click='stepper = 1') Continue
+            v-btn(color='primary', @click='stepper = 1') Finish
             v-btn(text, @click='stepper = 2') Cancel
       p and
         a(href='https://www.imdb.com/title/tt0469494/') blood
-      p and maps
 </template>
 
 <script lang="ts">
@@ -90,6 +101,8 @@ export default class Home extends Vue {
 
   slider = 45
   stepper = 1
+  transition2secondDialog = false
+
   mapCenter = { lat: 59.95, lng: 30.3 }
   mapZoom = 12
   get google() {
@@ -149,6 +162,15 @@ export default class Home extends Vue {
     }
   }
 
+  transition2second() {
+    this.transition2secondDialog = true
+    setTimeout(() => {
+      this.transition2secondDialog = false
+      this.stepper = 2
+      this.isInfoWindowOpened = false
+    }, 1500)
+  }
+
   mounted() {}
 }
 </script>
@@ -172,10 +194,10 @@ p {
 }
 
 .slide-fade-enter-active {
-  transition: all 0.2s ease-out;
+  transition: all 0.4s ease-out;
 }
 .slide-fade-leave-active {
-  transition: all 0.2s ease-in;
+  transition: all 0.4s ease-in;
 }
 .slide-fade-enter, .slide-fade-leave-to
 		/* .slide-fade-leave-active до версии 2.1.8 */ {

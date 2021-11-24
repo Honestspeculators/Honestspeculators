@@ -23,6 +23,9 @@ import Vuetify, {
   VStepperItems,
   VStepperStep,
   VCard,
+  VDialog,
+  VProgressLinear,
+  VCardText,
   VMain,
 } from 'vuetify/lib'
 import 'vuetify/dist/vuetify.min.css'
@@ -52,6 +55,9 @@ Vue.use(Vuetify, {
     VStepperItems,
     VStepperStep,
     VCard,
+    VDialog,
+    VProgressLinear,
+    VCardText,
     VMain,
   },
 })
