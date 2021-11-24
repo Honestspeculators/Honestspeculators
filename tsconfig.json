@@ -7,6 +7,7 @@
     "importHelpers": true,
     "strictNullChecks": true,
     "noImplicitThis": true,
+    "noImplicitAny": false,
     "strictFunctionTypes": true,
     "noEmit": true,
     "moduleResolution": "node",
@@ -16,7 +17,6 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "noImplicitAny": true,
     "typeRoots": ["./types/*", "./node_modules/@types"],
     "types": ["node", "vuetify"],
     "paths": {
