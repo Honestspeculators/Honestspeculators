@@ -2,15 +2,16 @@
 .v-container.pa-md-4.pt-xs-2.pl-xs-0.pr-xs-0(style='padding: 0 !important')
   // Main content
   v-layout(column, justify-center, align-center)
-    h1.h {{ $t("header") }}
-    v-container(justify-left)
+    h1.h.mt-2 {{ $t("header") }}
+    v-container.mt-8(justify-left)
       h3.t {{ $t("description") }}
-      small.t.mt-6 {{ $t("disclaimer") }}
-      v-stepper(v-model='stepper', vertical)
+      br
+      h6.t {{ $t("disclaimer") }}
+      v-stepper.mt-4#to2(v-model='stepper', vertical, color="primary")
         v-stepper-step(:complete='stepper > 1', step='1') {{ $t("stepper.h1") }}
           small {{ $t("stepper.d1") }}
-        v-stepper-content(step='1' style="margin: 0; padding: 0 !important")
-          v-card.mb-12(flat color='grey lighten-1', height='70vh')
+        v-stepper-content#stepper1(step='1', style='margin: 0; padding: 0 !important')
+          v-card.mb-12(flat, color='grey lighten-1', height='70vh')
             div
               google-map#map(
                 v-if='google',
@@ -41,12 +42,17 @@
             :column='isMobile'
           )
             v-spacer
-            v-btn.ma-2.mt-0(:x-large='!isMobile', @click='transition2second(false)') {{ $t("moreTime") }}
+            v-btn.ma-2.mt-0(
+              :x-large='!isMobile',
+              @click='transition2second(false)',
+              color='white',
+              style='z-index: 1'
+            ) {{ $t("moreTime") }}
             v-btn.ma-2.mt-0(
               x-large,
               color='primary',
               @click='transition2second(true)',
-              :loading='transition2secondDialog',
+              :loading='transition2secondDialog'
             ) {{ $t("booking") }}
             v-spacer
         v-dialog.mt-12(
@@ -55,16 +61,16 @@
           persistent,
           width='300'
         )
-          v-card(flat color='primary', dark)
+          v-card(flat, color='primary', dark)
             v-card-text 
-              h5 Загружаем информацию о загруженности и о тарифах...
+              h5.pt-4.mb-2(style="line-height: 85%") Загружаем информацию о загруженности и о тарифах...
               v-progress-linear(indeterminate, color='white')
         v-stepper-step(:complete='stepper > 2', step='2') {{ $t("stepper.h2") }}
           small {{ $t("stepper.d2") }}
-        v-stepper-content(step='2', v-if='isBooking', style="margin: 0").pr-0
-          v-card.mb-12.pa-md-8.pa-xs-2.pt-4(flat, height='200px')
-            v-layout.pt-3(:column="isMobile")
-              span.t(style='min-width: 200px; align-self: center;') Время парковки (часы)
+        v-stepper-content.pr-0(step='2', v-if='isBooking', style='margin: 0; padding: 0')
+          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='250px')
+            v-layout.pt-3(:column='isMobile')
+              span.t(style='min-width: 200px; align-self: center') Время парковки (часы)
               v-container(row)
                 v-slider.mt-8(
                   v-model='slider_time',
@@ -73,18 +79,29 @@
                   step='1',
                   :max='maxSteps',
                   :min='1',
-                  ticks="always",
-                  tick-size="2",
+                  ticks='always',
+                  tick-size='2', 
+                  color='primary'
                 )
-                v-btn(icon color='primary' style='align-self: center' @click='maxSteps=24' :disabled='maxSteps === 24')
+                v-btn(
+                  icon,
+                  color='primary',
+                  style='align-self: center',
+                  @click='maxSteps = 24',
+                  :disabled='maxSteps === 24'
+                )
                   v-icon mdi-plus
             v-layout
-              span.t(style='min-width: 100px') Цена
+              span.t(style='min-width: 100px; align-self: center') Цена
               h3.h(style='font-weight: 700') {{ display_price }} ₽
-          v-btn(color='primary', @click='stepper = 3') К оплате
-          v-btn(text, @click='stepper = 1') Назад
-        v-stepper-content(step='2', v-else, style="margin: 0")
-          v-card.mb-12.pa-8(flat, height='200px')
+            v-layout
+              v-btn.ma-2.mt-6.ml-0(outlined @click='stepper = 1') Назад
+              v-spacer
+              v-btn.ma-2.mt-6.ml-0.mr-6(color='primary', @click='stepper = 3') К оплате
+            br
+            br
+        v-stepper-content.mt-12(step='2', v-else, style='margin: 0')
+          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')
             h3.t Введите номер парковочного талона
             v-otp-input(
               length='6',
@@ -103,10 +120,17 @@
             v-btn(text, @click='stepper = 1', x-large) Назад
         v-stepper-step(:complete='stepper > 3', step='3', v-if='isBooking') {{ $t("stepper.h3") }}
           small {{ $t("stepper.d3") }}
-        v-stepper-content(step='3', v-if='isBooking', style="margin: 0")
-          v-card.mb-12(flat, color='grey lighten-1', height='200px')
-          v-btn(color='primary', @click='stepper = 1') Дебаг баттон
-          v-btn(text, @click='stepper = 2') Назад
+        v-stepper-content.pr-0(step='3', v-if='isBooking', style='margin: 0')
+          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')
+            p 👀
+          v-layout
+            v-btn(outlined, @click='stepper = 2') Назад
+            v-spacer
+            v-btn.mr-6(color='primary', @click='stepper = 1') Дебаг баттон
+          br
+          br
+          br
+          br
 </template>
 
 <script lang="ts">
@@ -216,6 +240,13 @@ export default class Home extends Vue {
       this.infoWinOpen = true
       this.currentMidx = idx
     }
+    // setTimeout(()=> {
+      this.$vuetify.goTo("#to2", {
+        duration: 500,
+        offset: 25,
+        easing: 'easeOutCubic'
+      })
+    // }, 10)
   }
 
   transition2second(isBooking: boolean) {
@@ -271,6 +302,7 @@ export default class Home extends Vue {
 .t {
   font-family: 'Gilroy Medium' !important;
   color: rgba(0, 0, 0, 0.9) !important;
+  line-height: 90% !important;
 }
 
 small {
@@ -292,5 +324,41 @@ p {
 .slide-fade-enter, .slide-fade-leave-to
 		/* .slide-fade-leave-active до версии 2.1.8 */ {
   transform: translateY(100vh);
+}
+
+.gmnoprint,
+.gm-control-active,
+.gm-fullscreen-control {
+  display: none;
+}
+
+.v-stepper {
+  border-radius: 15px !important;
+  /* background: #e0e0e0; */
+  box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff !important;
+}
+button, .v-dialog {
+  border-radius: 6px !important;
+  box-shadow:  20px 20px 60px #bebebe,
+             -20px -20px 60px #ffffff !important;
+}
+.v-dialog.primary {
+  background: linear-gradient(145deg, #0038a6, #002f8c) !important;
+}
+button.primary {
+  background: linear-gradient(145deg, #0038a6, #002f8c) !important;
+}
+button.white {
+  background: linear-gradient(145deg, #ffffff, #e6e6e6) !important;
+}
+.v-stepper__content {
+  padding: 0 !important;
+}
+.v-stepper__wrapper {
+  padding: 16px 0px 16px 23px !important;
+  padding-right: 0 !important;
+}
+#stepper1 > .v-stepper__wrapper {
+  padding: 0 !important;
 }
 </style>
