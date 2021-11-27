@@ -69,9 +69,9 @@
           small {{ $t("stepper.d2") }}
         v-stepper-content.pr-0(step='2', v-if='isBooking', style='margin: 0; padding: 0')
           v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='250px')
-            v-layout.pt-3(:column='isMobile')
+            v-layout.pt-3.pr-md-6(:column='isMobile')
               span.t(style='min-width: 200px; align-self: center') Время парковки (часы)
-              v-container(row)
+              v-container(row style='padding: 0').mt-4
                 v-slider.mt-8(
                   v-model='slider_time',
                   thumb-label='always',
@@ -97,7 +97,7 @@
             v-layout
               v-btn.ma-2.mt-6.ml-0(outlined @click='stepper = 1') Назад
               v-spacer
-              v-btn.ma-2.mt-6.ml-0.mr-6(color='primary', @click='stepper = 3') К оплате
+              v-btn.ma-2.mt-6.ml-0(color='primary', @click='stepper = 3') К оплате
             br
             br
         v-stepper-content.mt-12(step='2', v-else, style='margin: 0')
