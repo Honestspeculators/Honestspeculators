@@ -17,15 +17,16 @@ import Vuetify, {
   VTextarea,
   VInput,
   VContainer,
-  VSlider,
   VStepper,
-  VStepperContent,
-  VStepperItems,
   VStepperStep,
+  VStepperContent,
   VCard,
+  VCardTitle,
+  VCardText,
   VDialog,
   VProgressLinear,
-  VCardText,
+  VSlider,
+  VOtpInput,
   VMain,
 } from 'vuetify/lib'
 import 'vuetify/dist/vuetify.min.css'
@@ -49,15 +50,16 @@ Vue.use(Vuetify, {
     VTextarea,
     VInput,
     VContainer,
-    VSlider,
     VStepper,
-    VStepperContent,
-    VStepperItems,
     VStepperStep,
+    VStepperContent,
     VCard,
+    VCardTitle,
+    VCardText,
     VDialog,
     VProgressLinear,
-    VCardText,
+    VSlider,
+    VOtpInput,
     VMain,
   },
 })
@@ -66,11 +68,4 @@ export default new Vuetify({
   icons: {
     iconfont: 'mdi',
   },
-  theme: {
-    themes: {
-      light: {
-        primary: '#00349b'
-      }
-    }
-  }
 })
