@@ -296,11 +296,11 @@ export default class Home extends Vue {
 
 <style>
 .h {
-  font-family: 'Gilroy SemiBold' !important;
+  font-family: 'Gilroy SemiBold', 'WebFont' !important;
   color: #00349b !important;
 }
 .t {
-  font-family: 'Gilroy Medium' !important;
+  font-family: 'Gilroy Medium', 'WebFont' !important;
   color: rgba(0, 0, 0, 0.9) !important;
   line-height: 90% !important;
 }
