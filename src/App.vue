@@ -12,6 +12,13 @@ v-app(
   Snackbar
   v-main
     router-view
+    v-footer.pt-4.pb-4.mt-12
+      v-layout(align-center, justify-center, style="color: #333;")
+        h6.pr-1 Made with 
+        h6.pr-1(style="color: red")  ❤
+        h6 by 
+        h6
+          a.pl-1(href="https://kniazevgeny.github.io") kniazevgeny
 </template>
 
 <script lang="ts">
@@ -58,3 +65,13 @@ export default class App extends Vue {
   }
 }
 </script>
+<style>
+h6 {
+  font-weight: 600;
+  color: gray;
+}
+h6>a, a:active, a:link {
+  color: gray !important;
+  text-decoration-color: gray;
+}
+</style>

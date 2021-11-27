@@ -27,6 +27,7 @@ import Vuetify, {
   VProgressLinear,
   VSlider,
   VOtpInput,
+  VFooter,
   VMain,
 } from 'vuetify/lib'
 import 'vuetify/dist/vuetify.min.css'
@@ -60,6 +61,7 @@ Vue.use(Vuetify, {
     VProgressLinear,
     VSlider,
     VOtpInput,
+    VFooter,
     VMain,
   },
 })
