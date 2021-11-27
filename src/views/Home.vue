@@ -7,10 +7,13 @@
       h3.t {{ $t("description") }}
       br
       h6.t {{ $t("disclaimer") }}
-      v-stepper.mt-4#to2(v-model='stepper', vertical, color="primary")
+      v-stepper#to2.mt-4(v-model='stepper', vertical, color='primary')
         v-stepper-step(:complete='stepper > 1', step='1') {{ $t("stepper.h1") }}
           small {{ $t("stepper.d1") }}
-        v-stepper-content#stepper1(step='1', style='margin: 0; padding: 0 !important')
+        v-stepper-content#stepper1(
+          step='1',
+          style='margin: 0; padding: 0 !important'
+        )
           v-card.mb-12(flat, color='grey lighten-1', height='70vh')
             div
               google-map#map(
@@ -63,15 +66,44 @@
         )
           v-card(flat, color='primary', dark)
             v-card-text 
-              h5.pt-4.mb-2(style="line-height: 85%") Загружаем информацию о загруженности и о тарифах...
+              h5.pt-4.mb-2(style='line-height: 85%') Загружаем информацию о загруженности и о тарифах...
               v-progress-linear(indeterminate, color='white')
         v-stepper-step(:complete='stepper > 2', step='2') {{ $t("stepper.h2") }}
           small {{ $t("stepper.d2") }}
-        v-stepper-content.pr-0(step='2', v-if='isBooking', style='margin: 0; padding: 0')
-          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='250px')
+        v-stepper-content.pr-0(
+          step='2',
+          v-if='isBooking',
+          style='margin: 0; padding: 0'
+        )
+          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='340px')
+            v-layout.pt-3.pr-md-6.pr-3(:column='isMobile')
+              span.t(style='min-width: 300px; align-self: center; z-index: 1') 
+                span Время прибытия (приблизительно)
+                br
+                small.t Чтобы к вашему приезду точно было свободное место
+              v-spacer(:v-if='isMobile')
+              v-dialog(v-model='isTimePicker', width='500')
+                template(v-slot:activator='{ on, attrs }')
+                  v-btn.mt-3.mb-3(
+                    outlined,
+                    v-text='time',
+                    style='z-index: 0',
+                    v-bind='attrs',
+                    v-on='on',
+                  )
+                v-card
+                  v-time-picker(
+                    v-model='time',
+                    format='24hr',
+                    :allowed-minutes='(m) => m % 15 === 0',
+                    full-width,
+                    @click:minute='isTimePicker = false',
+                    color='primary'
+                  )
+            v-divider.mr-3(style='z-index: 1')
             v-layout.pt-3.pr-md-6(:column='isMobile')
-              span.t(style='min-width: 200px; align-self: center') Время парковки (часы)
-              v-container(row style='padding: 0').mt-4
+              span.t(style='min-width: 200px; align-self: center; z-index: 1') Время парковки (часы)
+              v-container.mt-4(row, style='padding: 0')
                 v-slider.mt-8(
                   v-model='slider_time',
                   thumb-label='always',
@@ -80,7 +112,7 @@
                   :max='maxSteps',
                   :min='1',
                   ticks='always',
-                  tick-size='2', 
+                  tick-size='2',
                   color='primary'
                 )
                 v-btn(
@@ -91,13 +123,15 @@
                   :disabled='maxSteps === 24'
                 )
                   v-icon mdi-plus
-            v-layout
-              span.t(style='min-width: 100px; align-self: center') Цена
-              h3.h(style='font-weight: 700') {{ display_price }} ₽
-            v-layout
-              v-btn.ma-2.mt-6.ml-0(outlined @click='stepper = 1') Назад
+            v-divider.mr-3(style='z-index: 1')
+            v-layout.mt-6
               v-spacer
-              v-btn.ma-2.mt-6.ml-0(color='primary', @click='stepper = 3') К оплате
+              span.t(style='min-width: 100px; align-self: center') Итого
+              h3.h.pr-3(style='font-weight: 700; min-width: 180px; text-align: right') {{ display_price }} ₽, {{time}}→{{newTime}}
+            v-layout
+              v-btn.ma-2.mt-3.ml-0(outlined, @click='stepper = 1') Назад
+              v-spacer
+              v-btn.ma-2.mt-3.ml-0(color='primary', @click='stepper = 3') К оплате
             br
             br
         v-stepper-content.mt-12(step='2', v-else, style='margin: 0')
@@ -164,9 +198,11 @@ export default class Home extends Vue {
 
   slider_price = 300
   display_price = 45
-  slider_time = 2.5
+  slider_time = 3
+  time = '12:20'
   maxSteps = 12
   interval: any = false
+  isTimePicker = false
 
   ready() {
     this.display_price = this.slider_price ? this.slider_price : 0
@@ -176,7 +212,11 @@ export default class Home extends Vue {
     return window.innerWidth < 600
   }
 
-  stepper = 1
+  get newTime() {
+    return (parseInt(this.time.slice(0,2)) + this.slider_time) % 24 + this.time.slice(2,5)
+  }
+
+  stepper = 2
   transition2secondDialog = false
   otp = ''
   isLoadingOTP = false
@@ -241,11 +281,11 @@ export default class Home extends Vue {
       this.currentMidx = idx
     }
     // setTimeout(()=> {
-      this.$vuetify.goTo("#to2", {
-        duration: 500,
-        offset: 25,
-        easing: 'easeOutCubic'
-      })
+    this.$vuetify.goTo('#to2', {
+      duration: 500,
+      offset: 25,
+      easing: 'easeOutCubic',
+    })
     // }, 10)
   }
 
@@ -290,7 +330,10 @@ export default class Home extends Vue {
     }, 1500)
   }
 
-  mounted() {}
+  mounted() {
+    let date = new Date()
+    this.time = date.getHours() + ':' + date.getMinutes()
+  }
 }
 </script>
 
@@ -341,10 +384,10 @@ p {
   /* background: #e0e0e0; */
   box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff !important;
 }
-button, .v-dialog {
+button,
+.v-dialog {
   border-radius: 6px !important;
-  box-shadow:  20px 20px 60px #bebebe,
-             -20px -20px 60px #ffffff !important;
+  box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff !important;
 }
 .v-dialog.primary {
   background: linear-gradient(145deg, #0038a6, #002f8c) !important;
