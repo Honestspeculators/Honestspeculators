@@ -12,7 +12,7 @@ v-app(
   Snackbar
   v-main
     router-view
-    v-footer.pt-4.pb-4.mt-12
+    v-footer.pt-4.pb-4(style="margin-top: 18vh")
       v-layout(align-center, justify-center, style="color: #333;")
         h6.pr-1 Made with 
         h6.pr-1(style="color: red")  ❤
@@ -70,7 +70,7 @@ h6 {
   font-weight: 600;
   color: gray;
 }
-h6>a, a:active, a:link {
+h6 > a, a:active, a:link {
   color: gray !important;
   text-decoration-color: gray;
 }
