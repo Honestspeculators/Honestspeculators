@@ -341,22 +341,22 @@ export default class Home extends Vue {
   }
 
   mounted() {
-    let isIOS = /iPad|iPhone|iPod/.test(navigator.platform)
     let geocoords = '59.917173,30.349131'
     let infoText = ''
-    if (isIOS) {
+    if (/iPad|iPhone|iPod/.test(navigator.platform)) {
       infoText = 'maps://?q=' + geocoords, '_system'
     }
-    else {
+    else if (/Android|Linux armv5tej|Linux armv6l|Linux armv7l|Linux armv8l/.test(navigator.platform)) {
       let label = encodeURI('Тюшина, 9/7') // encode the label!
       infoText = 'geo:0,0?q=' + geocoords + '(' + label + ')'
       // window.open(content, '_system')
     }
+    else infoText = 'https://www.google.co.in/maps?q=59.917173,30.349131'
     this.markers = [
       {
         position: { lat: 59.917173, lng: 30.349131 },
         infoText:
-          `<button onclick="window.open(\'`+infoText+`\')">Тюшина, 9/7</button>`,
+          `<button class='h' onclick="window.open(\'`+infoText+`\')">Тюшина, 9/7</button><br/><h6>Нажмите на адрес, чтобы построить маршрут</h6>`,
       },
     ]
   }
