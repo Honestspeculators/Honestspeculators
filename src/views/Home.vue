@@ -2,9 +2,9 @@
 .v-container.pa-md-4.pt-xs-2.pl-xs-0.pr-xs-0(style='padding: 0 !important')
   // Main content
   v-layout(column, justify-center, align-center)
-    h1.h.mt-2 {{ $t("header") }}
-    v-container.mt-8(justify-left)
-      h3.t {{ $t("description") }}
+    v-container(justify-left)
+      h1.h.mt-md-12.pt-sm-2.pt-xs-2 {{ $t("header") }}
+      h3.t.pt-8 {{ $t("description") }}
       br
       h6.t {{ $t("disclaimer") }}
       v-stepper#to2.mt-4(v-model='stepper', vertical, color='primary')
@@ -167,7 +167,7 @@
                     v-text-field(:rules='nameRules', label='Имя', required)
                 v-row
                   v-col.pl-0.pt-0.mt-0(cols='12', md='4')
-                    v-text-field(:rules='nameRules', label='E-mail', required)
+                    v-text-field(:rules='nameRules', label='E-mail', placeholder='Пишите, что пожелаете', required)
             v-layout.pb-3(:style='isMobile ? "" : "max-width: 350px"')
               h3.h.pr-3(
                 style='font-weight: 700; min-width: 80px; text-align: left'
