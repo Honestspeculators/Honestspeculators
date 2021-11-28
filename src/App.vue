@@ -11,7 +11,7 @@ v-app()
         h6
           a.pl-1(href="https://kniazevgeny.github.io") kniazevgeny,
         h6
-          a.pl-1(href="https://github.com/Honestspeculators/honestspeculators.github.io") open source
+          a.pl-1(href="https://github.com/Honestspeculators/Honestspeculators/tree/master") open source
 </template>
 
 <script lang="ts">
