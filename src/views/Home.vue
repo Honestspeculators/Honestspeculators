@@ -102,7 +102,7 @@
                   )
             v-divider.mr-3(style='z-index: 1')
             v-layout.pt-3.pr-md-6(:column='isMobile')
-              span.t(style='min-width: 200px; align-self: center; z-index: 1') Время парковки (часы)
+              span.t(style='min-width: 200px; align-self: baseline; z-index: 1') Время парковки (часы)
               v-container.mt-4(row, style='padding: 0')
                 v-slider.mt-8(
                   v-model='slider_time',
@@ -332,7 +332,7 @@ export default class Home extends Vue {
 
   mounted() {
     let date = new Date()
-    this.time = date.getHours() + ':' + date.getMinutes()
+    this.time = date.getHours() + ':' + (date.getMinutes().toString().length === 1 ? '0' + date.getMinutes() : date.getMinutes().toString())
   }
 }
 </script>
