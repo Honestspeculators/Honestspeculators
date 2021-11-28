@@ -76,7 +76,7 @@
           style='margin: 0; padding: 0'
         )
           v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='340px')
-            v-layout.pt-3.pr-md-3(:column='isMobile')
+            v-layout.pt-3.pr-3(:column='isMobile')
               span.t(style='min-width: 300px; align-self: center; z-index: 1') 
                 span Время прибытия (приблизительно)
                 br
@@ -130,7 +130,7 @@
               v-spacer
               span.t(style='min-width: 100px; align-self: center') Итого
               h3.h.pr-3(
-                style='font-weight: 700; min-width: 180px; text-align: right'
+                style='font-weight: 700; min-width: 170px; text-align: right'
               ) {{ display_price }} ₽, {{ time }}→{{ newTime }}
             v-layout
               v-btn.ma-2.mt-3.ml-0(outlined, @click='stepper = 1') Назад
@@ -163,33 +163,57 @@
             v-form(v-model='form')
               v-container
                 v-row
-                  v-col(cols='12', md='4').pl-0
+                  v-col(cols='12', md='4').pl-0.pt-0
                     v-text-field(
                       :rules='nameRules',
                       label='Имя',
                       required)
-                  v-col(cols='12', md='4').pl-0
+                  v-col(cols='12', md='4').pl-0.pt-0.mt-0
                     v-text-field(:rules='emailRules', label='E-mail', required)
+            v-layout.pb-3
+              h3.h.pr-3(
+                style='font-weight: 700; min-width: 80px; text-align: left'
+              ) {{ time }}→{{ newTime }}
+              v-spacer
+              h3.h.pr-3(
+                style='font-weight: 700; min-width: 80px; text-align: right'
+              ) {{ display_price }} ₽
             v-container#pay(:style='form ? "filter: none" : "filter: grayscale(1)"').pl-0
-              v-btn(icon :disabled='!form' style='width: 100%; max-width: min(350px, 85vw)').pl-0
+              v-btn(icon :disabled='!form' @click='transition2fourth' style='width: 100%; max-width: min(350px, 85vw)').pl-0
                 v-img(:src="require('../assets/sberpay.png')" style='width: 100%; max-width: min(350px, 85vw)')
               br
-              v-btn.mt-8(icon :disabled='!form' style='width: 100%; max-width: min(350px, 85vw)').pl-0
+              v-btn.mt-8.mt-md-12(icon :disabled='!form' @click='transition2fourth' style='width: 100%; max-width: min(350px, 85vw)').pl-0
                 v-img(:src="require('../assets/gpay.png')" style='width: 100%; max-width: min(350px, 85vw)')
               br
-              v-btn.mt-8(icon :disabled='!form' style='width: 100%; max-width: min(350px, 85vw)').pl-0
+              v-btn.mt-8.mt-md-12(icon :disabled='!form' @click='transition2fourth' style='width: 100%; max-width: min(350px, 85vw)').pl-0
                 v-img(:src="require('../assets/applepay.png')" style='width: 100%; max-width: min(350px, 85vw)')
               br
               br
               small Нажимайте, не стесняйтесь
-          v-layout
+          v-layout.pt-12
             v-btn(outlined, @click='stepper = 2') Назад
             v-spacer
             //- v-btn.mr-6(color='primary', @click='stepper = 1') Дебаг баттон
           br
           br
           br
-          br
+        v-dialog.mt-12(
+          v-model='transition2fourthDialog',
+          hide-overlay,
+          persistent,
+          width='300'
+        )
+          v-card(flat, :color='colorTransition2fourth ? "primary" : "black"', style="transition-duration: 500ms; transition: 500ms ease-out", dark)
+            v-card-text 
+              h5.pt-4.mb-2(style='line-height: 85%') Производится оплата...
+              v-progress-linear(indeterminate, color='white')
+        v-stepper-step(color='green' :complete='stepper > 3', step='4', v-if='isBooking & stepper === 4') {{ $t("stepper.h4") }}
+          small {{ $t("stepper.d4") }}
+        v-stepper-content.pr-0(step='4', v-if='isBooking', style='margin: 0')
+        br
+        br
+        br
+        br
 </template>
 
 <script lang="ts">
@@ -253,8 +277,10 @@ export default class Home extends Vue {
     )
   }
 
-  stepper = 3
+  stepper = 1
   transition2secondDialog = false
+  transition2fourthDialog = false
+  colorTransition2fourth = false
   otp = ''
   isLoadingOTP = false
 
@@ -339,6 +365,17 @@ export default class Home extends Vue {
     }, 1500)
   }
 
+  transition2fourth() {
+    this.transition2fourthDialog = true
+    setTimeout(() => {
+      this.colorTransition2fourth = true
+      setTimeout(() => {
+        this.transition2fourthDialog = false
+        this.stepper = 4
+      }, 750)
+    }, 750)
+  }
+
   SliderChange(isPrice) {
     if (isPrice) this.slider_time = this.slider_price / 2 / 60
     else this.slider_price = this.slider_time * 60 * 2
@@ -399,7 +436,7 @@ export default class Home extends Vue {
   font-weight: 600;
   color: #00349b !important;
 }
-.t {
+.t, .v-stepper__label {
   font-family: 'Gilroy', 'WebFont' !important;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.9) !important;
