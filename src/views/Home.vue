@@ -75,7 +75,7 @@
           v-if='isBooking',
           style='margin: 0; padding: 0'
         )
-          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='340px')
+          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='380px')
             v-layout.pt-3.pr-3(:column='isMobile')
               span.t(style='min-width: 300px; align-self: center; z-index: 1') 
                 span Время прибытия (приблизительно)
@@ -101,9 +101,9 @@
                     color='primary'
                   )
             v-divider.mr-3(style='z-index: 1')
-            v-layout.pt-3.pr-md-6(:column='isMobile')
+            v-layout.pt-6.pr-md-6(:column='isMobile')
               span.t(
-                style='min-width: 200px; align-self: baseline; z-index: 1'
+                :style='isMobile ? "min-width: 200px; align-self: baseline; z-index: 1" : "min-width: 200px; align-self: center; z-index: 1"'
               ) Время парковки (часы)
               v-container.mt-4(row, style='padding: 0')
                 v-slider.mt-8(
@@ -164,13 +164,11 @@
               v-container
                 v-row
                   v-col(cols='12', md='4').pl-0.pt-0
-                    v-text-field(
-                      :rules='nameRules',
-                      label='Имя',
-                      required)
+                    v-text-field(:rules='nameRules', label='Имя', required)
+                v-row
                   v-col(cols='12', md='4').pl-0.pt-0.mt-0
                     v-text-field(:rules='emailRules', label='E-mail', required)
-            v-layout.pb-3
+            v-layout.pb-3(:style='isMobile ? "" : "max-width: 350px"')
               h3.h.pr-3(
                 style='font-weight: 700; min-width: 80px; text-align: left'
               ) {{ time }}→{{ newTime }}
@@ -178,15 +176,41 @@
               h3.h.pr-3(
                 style='font-weight: 700; min-width: 80px; text-align: right'
               ) {{ display_price }} ₽
-            v-container#pay(:style='form ? "filter: none" : "filter: grayscale(1)"').pl-0
-              v-btn(icon :disabled='!form' @click='transition2fourth' style='width: 100%; max-width: min(350px, 85vw)').pl-0
-                v-img(:src="require('../assets/sberpay.png')" style='width: 100%; max-width: min(350px, 85vw)')
+            v-container#pay.pl-0(
+              :style='form ? "filter: none" : "filter: grayscale(1)"'
+            )
+              v-btn.pl-0(
+                icon,
+                :disabled='!form',
+                @click='transition2fourth',
+                style='width: 100%; max-width: min(350px, 85vw)'
+              )
+                v-img(
+                  :src='require("../assets/sberpay.png")',
+                  style='width: 100%; max-width: min(350px, 85vw)'
+                )
               br
-              v-btn.mt-8.mt-md-12(icon :disabled='!form' @click='transition2fourth' style='width: 100%; max-width: min(350px, 85vw)').pl-0
-                v-img(:src="require('../assets/gpay.png')" style='width: 100%; max-width: min(350px, 85vw)')
+              v-btn.mt-8.mt-md-12.pl-0(
+                icon,
+                :disabled='!form',
+                @click='transition2fourth',
+                style='width: 100%; max-width: min(350px, 85vw)'
+              )
+                v-img(
+                  :src='require("../assets/gpay.png")',
+                  style='width: 100%; max-width: min(350px, 85vw)'
+                )
               br
-              v-btn.mt-8.mt-md-12(icon :disabled='!form' @click='transition2fourth' style='width: 100%; max-width: min(350px, 85vw)').pl-0
-                v-img(:src="require('../assets/applepay.png')" style='width: 100%; max-width: min(350px, 85vw)')
+              v-btn.mt-8.mt-md-12.pl-0(
+                icon,
+                :disabled='!form',
+                @click='transition2fourth',
+                style='width: 100%; max-width: min(350px, 85vw)'
+              )
+                v-img(
+                  :src='require("../assets/applepay.png")',
+                  style='width: 100%; max-width: min(350px, 85vw)'
+                )
               br
               br
               small Нажимайте, не стесняйтесь
@@ -203,11 +227,21 @@
           persistent,
           width='300'
         )
-          v-card(flat, :color='colorTransition2fourth ? "primary" : "black"', style="transition-duration: 500ms; transition: 500ms ease-out", dark)
+          v-card(
+            flat,
+            :color='colorTransition2fourth ? "primary" : "black"',
+            style='transition-duration: 500ms; transition: 500ms ease-out',
+            dark
+          )
             v-card-text 
               h5.pt-4.mb-2(style='line-height: 85%') Производится оплата...
               v-progress-linear(indeterminate, color='white')
-        v-stepper-step(color='green' :complete='stepper > 3', step='4', v-if='isBooking & stepper === 4') {{ $t("stepper.h4") }}
+        v-stepper-step(
+          color='green',
+          :complete='stepper > 3',
+          step='4',
+          v-if='isBooking & (stepper === 4)'
+        ) {{ $t("stepper.h4") }}
           small {{ $t("stepper.d4") }}
         v-stepper-content.pr-0(step='4', v-if='isBooking', style='margin: 0')
         br
@@ -254,13 +288,11 @@ export default class Home extends Vue {
   isTimePicker = false
   form = false
 
-  nameRules= [
-        v => !!v || 'Обязательное поле'
-      ]
+  nameRules = [(v) => !!v || 'Обязательное поле']
   emailRules = [
-        v => !!v || 'Обязательное поле',
-        v => /.+@.+/.test(v) || 'E-mail введен некорректно',
-      ]
+    (v) => !!v || 'Обязательное поле',
+    (v) => /.+@.+/.test(v) || 'E-mail введен некорректно',
+  ]
 
   ready() {
     this.display_price = this.slider_price ? this.slider_price : 0
@@ -411,19 +443,23 @@ export default class Home extends Vue {
     let geocoords = '59.917173,30.349131'
     let infoText = ''
     if (/iPad|iPhone|iPod/.test(navigator.platform)) {
-      infoText = 'maps://?q=' + geocoords, '_system'
-    }
-    else if (/Android|Linux armv5tej|Linux armv6l|Linux armv7l|Linux armv8l/.test(navigator.platform)) {
+      ;(infoText = 'maps://?q=' + geocoords), '_system'
+    } else if (
+      /Android|Linux armv5tej|Linux armv6l|Linux armv7l|Linux armv8l/.test(
+        navigator.platform
+      )
+    ) {
       let label = encodeURI('Тюшина, 9/7') // encode the label!
       infoText = 'geo:0,0?q=' + geocoords + '(' + label + ')'
       // window.open(content, '_system')
-    }
-    else infoText = 'https://www.google.co.in/maps?q=59.917173,30.349131'
+    } else infoText = 'https://www.google.co.in/maps?q=59.917173,30.349131'
     this.markers = [
       {
         position: { lat: 59.917173, lng: 30.349131 },
         infoText:
-          `<button class='h' onclick="window.open(\'`+infoText+`\')">Тюшина, 9/7</button><br/><h6>Нажмите на адрес, чтобы построить маршрут</h6>`,
+          `<button class='h' onclick="window.open(\'` +
+          infoText +
+          `\')">Тюшина, 9/7</button><br/><h6>Нажмите на адрес, чтобы построить маршрут</h6>`,
       },
     ]
   }
@@ -436,7 +472,8 @@ export default class Home extends Vue {
   font-weight: 600;
   color: #00349b !important;
 }
-.t, .v-stepper__label {
+.t,
+.v-stepper__label {
   font-family: 'Gilroy', 'WebFont' !important;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.9) !important;
