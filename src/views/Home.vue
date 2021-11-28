@@ -89,7 +89,7 @@
                     v-text='time',
                     style='z-index: 0',
                     v-bind='attrs',
-                    v-on='on',
+                    v-on='on'
                   )
                 v-card
                   v-time-picker(
@@ -102,7 +102,9 @@
                   )
             v-divider.mr-3(style='z-index: 1')
             v-layout.pt-3.pr-md-6(:column='isMobile')
-              span.t(style='min-width: 200px; align-self: baseline; z-index: 1') Время парковки (часы)
+              span.t(
+                style='min-width: 200px; align-self: baseline; z-index: 1'
+              ) Время парковки (часы)
               v-container.mt-4(row, style='padding: 0')
                 v-slider.mt-8(
                   v-model='slider_time',
@@ -127,7 +129,9 @@
             v-layout.mt-6
               v-spacer
               span.t(style='min-width: 100px; align-self: center') Итого
-              h3.h.pr-3(style='font-weight: 700; min-width: 180px; text-align: right') {{ display_price }} ₽, {{time}}→{{newTime}}
+              h3.h.pr-3(
+                style='font-weight: 700; min-width: 180px; text-align: right'
+              ) {{ display_price }} ₽, {{ time }}→{{ newTime }}
             v-layout
               v-btn.ma-2.mt-3.ml-0(outlined, @click='stepper = 1') Назад
               v-spacer
@@ -197,7 +201,7 @@ export default class Home extends Vue {
   @SnackbarStore.Mutation setSnackbarError!: (error: string) => void
 
   slider_price = 300
-  display_price = 45
+  display_price = 360
   slider_time = 3
   time = '12:20'
   maxSteps = 12
@@ -213,10 +217,13 @@ export default class Home extends Vue {
   }
 
   get newTime() {
-    return (parseInt(this.time.slice(0,2)) + this.slider_time) % 24 + this.time.slice(2,5)
+    return (
+      ((parseInt(this.time.slice(0, 2)) + this.slider_time) % 24) +
+      this.time.slice(2, 5)
+    )
   }
 
-  stepper = 2
+  stepper = 1
   transition2secondDialog = false
   otp = ''
   isLoadingOTP = false
@@ -251,13 +258,9 @@ export default class Home extends Vue {
 
   markers = [
     {
-      position: { lat: 59.94, lng: 30.35 },
+      position: { lat: 59.917173, lng: 30.349131 },
       infoText:
-        '<button onclick="alert(\'learn brainfuck\')">BrainFuck!</button>',
-    },
-    {
-      position: { lat: 59.92, lng: 30.25 },
-      infoText: '<button onclick="alert(\'потрачено\')">Deep diving!</button>',
+        '<button onclick="alert(\'learn brainfuck\')">Тюшина, 9/7</button>',
     },
   ]
 
@@ -292,6 +295,13 @@ export default class Home extends Vue {
   transition2second(isBooking: boolean) {
     this.isBooking = isBooking
     this.transition2secondDialog = true
+    let date = new Date()
+    this.time =
+      date.getHours() +
+      ':' +
+      (date.getMinutes().toString().length === 1
+        ? '0' + date.getMinutes()
+        : date.getMinutes().toString())
     setTimeout(() => {
       this.transition2secondDialog = false
       this.stepper = 2
@@ -331,8 +341,24 @@ export default class Home extends Vue {
   }
 
   mounted() {
-    let date = new Date()
-    this.time = date.getHours() + ':' + (date.getMinutes().toString().length === 1 ? '0' + date.getMinutes() : date.getMinutes().toString())
+    let isIOS = /iPad|iPhone|iPod/.test(navigator.platform)
+    let geocoords = '59.917173,30.349131'
+    let infoText = ''
+    if (isIOS) {
+      infoText = 'maps://?q=' + geocoords, '_system'
+    }
+    else {
+      let label = encodeURI('Тюшина, 9/7') // encode the label!
+      infoText = 'geo:0,0?q=' + geocoords + '(' + label + ')'
+      // window.open(content, '_system')
+    }
+    this.markers = [
+      {
+        position: { lat: 59.917173, lng: 30.349131 },
+        infoText:
+          `<button onclick="window.open(\'`+infoText+`\')">Тюшина, 9/7</button>`,
+      },
+    ]
   }
 }
 </script>
