@@ -163,11 +163,11 @@
             v-form(v-model='form')
               v-container
                 v-row
-                  v-col(cols='12', md='4').pl-0.pt-0
+                  v-col.pl-0.pt-0(cols='12', md='4')
                     v-text-field(:rules='nameRules', label='Имя', required)
                 v-row
-                  v-col(cols='12', md='4').pl-0.pt-0.mt-0
-                    v-text-field(:rules='emailRules', label='E-mail', required)
+                  v-col.pl-0.pt-0.mt-0(cols='12', md='4')
+                    v-text-field(:rules='nameRules', label='E-mail', required)
             v-layout.pb-3(:style='isMobile ? "" : "max-width: 350px"')
               h3.h.pr-3(
                 style='font-weight: 700; min-width: 80px; text-align: left'
@@ -238,12 +238,20 @@
               v-progress-linear(indeterminate, color='white')
         v-stepper-step(
           color='green',
-          :complete='stepper > 3',
           step='4',
-          v-if='isBooking & (stepper === 4)'
+          v-if='isBooking'
         ) {{ $t("stepper.h4") }}
           small {{ $t("stepper.d4") }}
         v-stepper-content.pr-0(step='4', v-if='isBooking', style='margin: 0')
+          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')
+            h3.h Номер заказа
+            v-otp-input(
+              length='6',
+              type='number',
+              v-model='otp',
+              readonly,
+              style='max-width: 260px')
+            h5.t.pt-2 Ждем вас к {{time}}. Время считается с момента приезда
         br
         br
         br
@@ -313,7 +321,7 @@ export default class Home extends Vue {
   transition2secondDialog = false
   transition2fourthDialog = false
   colorTransition2fourth = false
-  otp = ''
+  otp = '123456'
   isLoadingOTP = false
 
   mapCenter = { lat: 59.95, lng: 30.3 }
