@@ -32,6 +32,10 @@ import Vuetify, {
   VTimePickerClock,
   VTimePickerTitle,
   VDivider,
+  VImg,
+  VCol,
+  VRow,
+  VForm,
   VMain,
 } from 'vuetify/lib'
 import 'vuetify/dist/vuetify.min.css'
@@ -70,6 +74,10 @@ Vue.use(Vuetify, {
     VTimePickerClock,
     VTimePickerTitle,
     VDivider,
+    VImg,
+    VCol,
+    VRow,
+    VForm,
     VMain,
   },
 })

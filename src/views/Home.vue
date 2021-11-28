@@ -76,7 +76,7 @@
           style='margin: 0; padding: 0'
         )
           v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='340px')
-            v-layout.pt-3.pr-md-6.pr-3(:column='isMobile')
+            v-layout.pt-3.pr-md-3(:column='isMobile')
               span.t(style='min-width: 300px; align-self: center; z-index: 1') 
                 span Время прибытия (приблизительно)
                 br
@@ -159,12 +159,33 @@
         v-stepper-step(:complete='stepper > 3', step='3', v-if='isBooking') {{ $t("stepper.h3") }}
           small {{ $t("stepper.d3") }}
         v-stepper-content.pr-0(step='3', v-if='isBooking', style='margin: 0')
-          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')
-            p 👀
+          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='400px')
+            v-form(v-model='form')
+              v-container
+                v-row
+                  v-col(cols='12', md='4').pl-0
+                    v-text-field(
+                      :rules='nameRules',
+                      label='Имя',
+                      required)
+                  v-col(cols='12', md='4').pl-0
+                    v-text-field(:rules='emailRules', label='E-mail', required)
+            v-container#pay(:style='form ? "filter: none" : "filter: grayscale(1)"').pl-0
+              v-btn(icon :disabled='!form' style='width: 100%; max-width: min(350px, 85vw)').pl-0
+                v-img(:src="require('../assets/sberpay.png')" style='width: 100%; max-width: min(350px, 85vw)')
+              br
+              v-btn.mt-8(icon :disabled='!form' style='width: 100%; max-width: min(350px, 85vw)').pl-0
+                v-img(:src="require('../assets/gpay.png')" style='width: 100%; max-width: min(350px, 85vw)')
+              br
+              v-btn.mt-8(icon :disabled='!form' style='width: 100%; max-width: min(350px, 85vw)').pl-0
+                v-img(:src="require('../assets/applepay.png')" style='width: 100%; max-width: min(350px, 85vw)')
+              br
+              br
+              small Нажимайте, не стесняйтесь
           v-layout
             v-btn(outlined, @click='stepper = 2') Назад
             v-spacer
-            v-btn.mr-6(color='primary', @click='stepper = 1') Дебаг баттон
+            //- v-btn.mr-6(color='primary', @click='stepper = 1') Дебаг баттон
           br
           br
           br
@@ -207,6 +228,15 @@ export default class Home extends Vue {
   maxSteps = 12
   interval: any = false
   isTimePicker = false
+  form = false
+
+  nameRules= [
+        v => !!v || 'Обязательное поле'
+      ]
+  emailRules = [
+        v => !!v || 'Обязательное поле',
+        v => /.+@.+/.test(v) || 'E-mail введен некорректно',
+      ]
 
   ready() {
     this.display_price = this.slider_price ? this.slider_price : 0
@@ -223,7 +253,7 @@ export default class Home extends Vue {
     )
   }
 
-  stepper = 1
+  stepper = 3
   transition2secondDialog = false
   otp = ''
   isLoadingOTP = false
@@ -433,5 +463,9 @@ button.white {
 }
 #stepper1 > .v-stepper__wrapper {
   padding: 0 !important;
+}
+#pay {
+  transition: cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition-duration: 500ms;
 }
 </style>
