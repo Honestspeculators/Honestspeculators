@@ -94,6 +94,7 @@
                     color='primary'
                   )
                 v-card
+                  v-card-title.h(style='word-break: keep-all') Выберите сначала час, а потом минуты
                   v-time-picker(
                     v-model='time',
                     format='24hr',
@@ -106,7 +107,10 @@
             v-layout.pt-6.pr-md-6(:column='isMobile')
               span.t(
                 :style='isMobile ? "min-width: 200px; align-self: baseline; z-index: 1" : "min-width: 200px; align-self: center; z-index: 1"'
-              ) Время парковки (часы)
+              ) 
+                span Время парковки (часы)
+                br
+                small.t Сдвиньте ползунок для регулировки
               v-container.mt-4(row, style='padding: 0')
                 v-slider.mt-8(
                   v-model='slider_time',
@@ -598,7 +602,6 @@ export default class Home extends Vue {
   color: rgba(0, 0, 0, 0.9) !important;
   line-height: 90% !important;
 }
-
 small, small.t {
   font-family: 'Gilroy' !important;
   font-weight: 600;
