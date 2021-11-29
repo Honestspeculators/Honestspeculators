@@ -21,7 +21,7 @@
                 :center='mapCenter',
                 :zoom='mapZoom',
                 ref='mapRef',
-                style='height: 70vh; width: 100vw; z-index: 1',
+                style='height: 70vh; width: 100vw; z-index: 1'
               )
                 gmap-info-window(
                   :position='infoWindowPos',
@@ -78,7 +78,7 @@
         )
           v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='380px')
             v-layout.pt-3.pr-3(:column='isMobile')
-              span.t(style='min-width: 300px; align-self: center; z-index: 1') 
+              span.t(style='min-width: 260px; align-self: center; z-index: 1') 
                 span Время прибытия (приблизительно)
                 br
                 small.t Чтобы к вашему приезду точно было свободное место
@@ -91,6 +91,7 @@
                     style='z-index: 0',
                     v-bind='attrs',
                     v-on='on'
+                    color='primary'
                   )
                 v-card
                   v-time-picker(
@@ -110,7 +111,7 @@
                 v-slider.mt-8(
                   v-model='slider_time',
                   thumb-label='always',
-                  @change='SliderChange(false)',
+                  @change='SliderChange()',
                   step='1',
                   :max='maxSteps',
                   :min='1',
@@ -143,18 +144,55 @@
               ) К оплате
             br
             br
-        v-stepper-content.mt-12(step='2', v-else, style='margin: 0')
-          v-card#otp.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')
-            h3.t Введите номер парковочного талона
-            v-otp-input#otp(
-              length='6',
-              type='number',
-              v-model='otp',
-              style='max-width: 260px',
-              @finish='FinishedOTP()',
-              :disabled='isLoadingOTP',
-              ref='otp'
-            )
+        v-stepper-content.mt-1(step='2', v-else, style='margin: 0')
+          v-card#otp.mb-12.pb-12.pa-md-8.pa-xs-2.pb-2(flat, height='380px')
+            v-layout.pr-md-6(:column='isMobile')
+              span.t(
+                :style='isMobile ? "min-width: 200px; align-self: baseline; z-index: 1" : "min-width: 200px; align-self: center; z-index: 1"'
+              ) Введите номер парковочного талона
+              v-spacer(:v-if='isMobile')
+              v-otp-input#otp(
+                length='6',
+                type='number',
+                v-model='otp',
+                style='max-width: 260px',
+                @finish='FinishedOTP()',
+                :disabled='isLoadingOTP',
+                ref='otp',
+                color='primary'
+              )
+            v-layout.pt-6.pr-md-6(:column='isMobile')
+              span.t(
+                :style='isMobile ? "min-width: 200px; align-self: baseline; z-index: 1" : "min-width: 200px; align-self: center; z-index: 1"'
+              ) На сколько продлить время парковки (часы)
+              v-container.mt-4(row, style='padding: 0')
+                v-slider.mt-8(
+                  v-model='slider_time',
+                  thumb-label='always',
+                  @change='SliderChange()',
+                  step='1',
+                  :max='8',
+                  :min='1',
+                  ticks='always',
+                  tick-size='2',
+                  color='primary',
+                  :disabled='!isActiveOTP()'
+                )
+                  v-icon mdi-plus
+            v-divider.mr-3(style='z-index: 1')
+            v-layout.mt-6
+              v-spacer
+              span.t(style='min-width: 100px; align-self: center') Итого
+              h3.h.pr-3(
+                v-if='!(!isActiveOTP() || isLoadingOTP)',
+                style='font-weight: 700; min-width: 170px; text-align: right'
+              ) {{ display_price }} ₽, {{ time }}→{{ newTime }}
+              v-skeleton-loader.pr-3(
+                v-else,
+                v-bind='attrs',
+                type='actions',
+                style='font-weight: 700; min-width: 170px; text-align: right'
+              ) 
             v-layout
               v-btn.ma-2.mt-3.ml-0(outlined, @click='stepper = 1', x-large) Назад
               v-spacer
@@ -163,16 +201,22 @@
                 :loading='isLoadingOTP',
                 x-large,
                 color='primary'
-              ) Далее
-        v-stepper-step(:complete='stepper > 3', step='3') {{ isBooking ? $t("stepper.h3") : $t("stepper.h3T") }}
-          small {{ isBooking ? $t("stepper.d3") : $t("stepper.d3T") }}
-        v-stepper-content.pr-0(step='3', v-if='isBooking', style='margin: 0')
+                @click='transition2third',
+              ) {{ !(!isActiveOTP() || isLoadingOTP) ? 'К оплате' : 'Далее'}}
+        v-stepper-step(:complete='stepper > 3', step='3') {{ $t("stepper.h3") }}
+          small {{ $t("stepper.d3") }}
+        v-stepper-content.pr-0(step='3', style='margin: 0')
           v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='400px')
-            v-form(v-model='form')
+            v-form(v-model='form', v-if='isBooking')
               v-container
                 v-row
                   v-col.pl-0.pt-0(cols='12', md='4')
-                    v-text-field(:rules='nameRules', label='Имя', required, ref='name')
+                    v-text-field(
+                      :rules='nameRules',
+                      label='Имя',
+                      required,
+                      ref='name'
+                    )
                 v-row
                   v-col.pl-0.pt-0.mt-0(cols='12', md='4')
                     v-text-field(
@@ -190,11 +234,11 @@
                 style='font-weight: 700; min-width: 80px; text-align: right'
               ) {{ display_price }} ₽
             v-container#pay.pl-0(
-              :style='form ? "filter: none" : "filter: grayscale(1)"'
+              :style='(form || !isBooking) ? "filter: none" : "filter: grayscale(1)"'
             )
               v-btn.pl-0(
                 icon,
-                :disabled='!form',
+                :disabled='!form && isBooking',
                 @click='transition2fourth',
                 style='width: 100%; max-width: min(350px, 85vw)'
               )
@@ -249,9 +293,9 @@
             v-card-text 
               h5.pt-4.mb-2(style='line-height: 85%') Производится оплата...
               v-progress-linear(indeterminate, color='white')
-        v-stepper-step(color='green', step='4', v-if='isBooking') {{ $t("stepper.h4") }}
+        v-stepper-step(color='green', step='4') {{ $t("stepper.h4") }}
           small {{ $t("stepper.d4") }}
-        v-stepper-content.pr-0(step='4', v-if='isBooking', style='margin: 0')
+        v-stepper-content.pr-0(step='4', style='margin: 0')
           v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')
             h3.h Номер заказа
             v-otp-input(
@@ -261,7 +305,8 @@
               readonly,
               style='max-width: 260px'
             )
-            h5.t.pt-2 Ждем вас к {{ time }}. Время считается с момента приезда
+            h5.t.pt-2(v-if='isBooking') Ждем вас к {{ time }}. Время считается с момента приезда
+            h5.t.pt-2(v-else) Время стоянки успешно продлено до {{ newTime }}
         br
         br
         br
@@ -306,6 +351,11 @@ export default class Home extends Vue {
   interval: any = false
   isTimePicker = false
   form = false
+  attrs = {
+    class: 'pa-0',
+    boilerplate: false,
+    elevation: 0,
+  }
 
   nameRules = [(v) => !!v || 'Обязательное поле']
   emailRules = [
@@ -427,7 +477,9 @@ export default class Home extends Vue {
 
     let date = new Date()
     this.time =
-      date.getHours() +
+      (date.getHours().toString().length === 1
+        ? '0' + date.getHours()
+        : date.getHours().toString()) +
       ':' +
       (date.getMinutes().toString().length === 1
         ? '0' + date.getMinutes()
@@ -449,7 +501,7 @@ export default class Home extends Vue {
 
   transition2third() {
     this.stepper = 3
-    setTimeout(() => (this.$refs.name as any).$refs.input.focus())
+    if (this.isBooking) setTimeout(() => (this.$refs.name as any).$refs.input.focus())
   }
 
   transition2fourth() {
@@ -464,9 +516,8 @@ export default class Home extends Vue {
     }, 750)
   }
 
-  SliderChange(isPrice) {
-    if (isPrice) this.slider_time = this.slider_price / 2 / 60
-    else this.slider_price = this.slider_time * 60 * 2
+  SliderChange() {
+    this.slider_price = this.slider_time * 60 * 2
     this.number()
   }
 
@@ -498,12 +549,12 @@ export default class Home extends Vue {
   mounted() {
     interface Marker {
       position: {
-        lat: number,
+        lat: number
         lng: number
-      },
+      }
       infoText: string
     }
-    let markers:Marker[] = []
+    let markers: Marker[] = []
     let isiPhone = /iPad|iPhone|iPod/.test(navigator.platform)
     let isAndroid =
       /Android|Linux armv5tej|Linux armv6l|Linux armv7l|Linux armv8l/.test(
@@ -513,7 +564,7 @@ export default class Home extends Vue {
       let geocoords = marker.lat.toString() + ',' + marker.lng.toString()
       let infoText = ''
       if (isiPhone) {
-        (infoText = 'maps://?q=' + geocoords), '_system'
+        ;(infoText = 'maps://?q=' + geocoords), '_system'
       } else if (isAndroid) {
         let label = encodeURI(marker.label) // encode the label!
         infoText = 'geo:0,0?q=' + geocoords + '(' + label + ')'
@@ -524,7 +575,9 @@ export default class Home extends Vue {
         infoText:
           `<button class='h' onclick="window.open(\'` +
           infoText +
-          `\')">` + marker.label + `</button><br/><h6>Нажмите на адрес, чтобы построить маршрут</h6>`,
+          `\')">` +
+          marker.label +
+          `</button><br/><h6>Нажмите на адрес, чтобы построить маршрут</h6>`,
       })
     })
     this.markers = markers
@@ -541,14 +594,14 @@ export default class Home extends Vue {
 .t,
 .v-stepper__label {
   font-family: 'Gilroy', 'WebFont' !important;
-  font-weight: 500;
+  font-weight: 600;
   color: rgba(0, 0, 0, 0.9) !important;
   line-height: 90% !important;
 }
 
-small {
+small, small.t {
   font-family: 'Gilroy' !important;
-  font-weight: 500;
+  font-weight: 600;
   color: rgba(0, 0, 0, 0.9) !important;
 }
 
@@ -607,5 +660,8 @@ button.white {
 #pay {
   transition: cubic-bezier(0.165, 0.84, 0.44, 1);
   transition-duration: 500ms;
+}
+.v-skeleton-loader__actions.v-skeleton-loader__bone {
+  padding: 0 !important
 }
 </style>

@@ -36,6 +36,7 @@ import Vuetify, {
   VCol,
   VRow,
   VForm,
+  VSkeletonLoader,
   VMain,
 } from 'vuetify/lib'
 import 'vuetify/dist/vuetify.min.css'
@@ -78,6 +79,7 @@ Vue.use(Vuetify, {
     VCol,
     VRow,
     VForm,
+    VSkeletonLoader,
     VMain,
   },
 })
