@@ -420,7 +420,7 @@ export default class Home extends Vue {
       this.stepper = 2
       this.isInfoWindowOpened = false
       this.otp = ''
-      setTimeout(() => this.$refs.otp.$refs.input[0].focus())
+      setTimeout(() => (this.$refs.otp as any).$refs.input[0].focus())
       // document.getElementById("#otp").focus()
       return
     }
@@ -449,7 +449,7 @@ export default class Home extends Vue {
 
   transition2third() {
     this.stepper = 3
-    setTimeout(() => this.$refs.name.$refs.input.focus())
+    setTimeout(() => (this.$refs.name as any).$refs.input.focus())
   }
 
   transition2fourth() {
@@ -496,7 +496,14 @@ export default class Home extends Vue {
   }
 
   mounted() {
-    let markers = []
+    interface Marker {
+      position: {
+        lat: number,
+        lng: number
+      },
+      infoText: string
+    }
+    let markers:Marker[] = []
     let isiPhone = /iPad|iPhone|iPod/.test(navigator.platform)
     let isAndroid =
       /Android|Linux armv5tej|Linux armv6l|Linux armv7l|Linux armv8l/.test(
