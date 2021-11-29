@@ -21,7 +21,7 @@
                 :center='mapCenter',
                 :zoom='mapZoom',
                 ref='mapRef',
-                style='height: 70vh; width: 100vw; z-index: 1'
+                style='height: 70vh; width: 100vw; z-index: 1',
               )
                 gmap-info-window(
                   :position='infoWindowPos',
@@ -138,23 +138,22 @@
               v-spacer
               v-btn.ma-2.mt-3.ml-0(
                 color='primary',
-                @click='stepper = 3',
+                @click='transition2third',
                 x-large
               ) К оплате
             br
             br
         v-stepper-content.mt-12(step='2', v-else, style='margin: 0')
-          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')#otp
+          v-card#otp.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')
             h3.t Введите номер парковочного талона
-            v-otp-input(
+            v-otp-input#otp(
               length='6',
               type='text',
               v-model='otp',
               style='max-width: 260px',
               @finish='FinishedOTP()',
               :disabled='isLoadingOTP',
-              ref='otp',
-              id='otp'
+              ref='otp'
             )
             v-layout
               v-btn.ma-2.mt-3.ml-0(outlined, @click='stepper = 1', x-large) Назад
@@ -173,7 +172,7 @@
               v-container
                 v-row
                   v-col.pl-0.pt-0(cols='12', md='4')
-                    v-text-field(:rules='nameRules', label='Имя', required)
+                    v-text-field(:rules='nameRules', label='Имя', required, ref='name')
                 v-row
                   v-col.pl-0.pt-0.mt-0(cols='12', md='4')
                     v-text-field(
@@ -365,11 +364,21 @@ export default class Home extends Vue {
 
   isInfoWindowOpened = false
 
+  rawMarkers = [
+    { lat: 59.917173, lng: 30.349131, label: 'Тюшина, 9/7' },
+    { lat: 59.9132549, lng: 30.2811468, label: 'Рижский, 46' },
+    { lat: 59.9223603, lng: 30.3035712, label: 'Большая Подьяческая, 24/63' },
+    {
+      lat: 59.969475,
+      lng: 30.3828643,
+      label: 'Кондратьевский проспект, 40 к10',
+    },
+    { lat: 59.8534778, lng: 30.2425765, label: 'Стачек проспект, 172' },
+  ]
   markers = [
     {
       position: { lat: 59.917173, lng: 30.349131 },
-      infoText:
-        '<button onclick="alert(\'learn brainfuck\')">Тюшина, 9/7</button>',
+      infoText: `<button class='h' onclick="window.open()">Тюшина, 9/7</button><br/><h6>Нажмите на адрес, чтобы построить маршрут</h6>`,
     },
   ]
 
@@ -438,6 +447,11 @@ export default class Home extends Vue {
     return result
   }
 
+  transition2third() {
+    this.stepper = 3
+    setTimeout(() => this.$refs.name.$refs.input.focus())
+  }
+
   transition2fourth() {
     this.transition2fourthDialog = true
     this.otp = this.RandomNumString()
@@ -482,28 +496,31 @@ export default class Home extends Vue {
   }
 
   mounted() {
-    let geocoords = '59.917173,30.349131'
-    let infoText = ''
-    if (/iPad|iPhone|iPod/.test(navigator.platform)) {
-      ;(infoText = 'maps://?q=' + geocoords), '_system'
-    } else if (
+    let markers = []
+    let isiPhone = /iPad|iPhone|iPod/.test(navigator.platform)
+    let isAndroid =
       /Android|Linux armv5tej|Linux armv6l|Linux armv7l|Linux armv8l/.test(
         navigator.platform
       )
-    ) {
-      let label = encodeURI('Тюшина, 9/7') // encode the label!
-      infoText = 'geo:0,0?q=' + geocoords + '(' + label + ')'
-      // window.open(content, '_system')
-    } else infoText = 'https://www.google.co.in/maps?q=59.917173,30.349131'
-    this.markers = [
-      {
-        position: { lat: 59.917173, lng: 30.349131 },
+    this.rawMarkers.forEach((marker) => {
+      let geocoords = marker.lat.toString() + ',' + marker.lng.toString()
+      let infoText = ''
+      if (isiPhone) {
+        (infoText = 'maps://?q=' + geocoords), '_system'
+      } else if (isAndroid) {
+        let label = encodeURI(marker.label) // encode the label!
+        infoText = 'geo:0,0?q=' + geocoords + '(' + label + ')'
+        // window.open(content, '_system')
+      } else infoText = 'https://www.google.co.in/maps?q=' + geocoords
+      markers.push({
+        position: { lat: marker.lat, lng: marker.lng },
         infoText:
           `<button class='h' onclick="window.open(\'` +
           infoText +
-          `\')">Тюшина, 9/7</button><br/><h6>Нажмите на адрес, чтобы построить маршрут</h6>`,
-      },
-    ]
+          `\')">` + marker.label + `</button><br/><h6>Нажмите на адрес, чтобы построить маршрут</h6>`,
+      })
+    })
+    this.markers = markers
   }
 }
 </script>
