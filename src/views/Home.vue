@@ -48,6 +48,7 @@
             v-btn.ma-2.mt-0(
               :x-large='!isMobile',
               @click='transition2second(false)',
+              :loading='transition2secondTimeDialog',
               color='white',
               style='z-index: 1'
             ) {{ $t("moreTime") }}
@@ -66,10 +67,10 @@
         )
           v-card(flat, color='primary', dark)
             v-card-text 
-              h5.pt-4.mb-2(style='line-height: 85%') Загружаем информацию о загруженности и о тарифах...
+              h5.pt-4.mb-2(style='line-height: 85%') {{ $t("dialog2") }}
               v-progress-linear(indeterminate, color='white')
-        v-stepper-step(:complete='stepper > 2', step='2') {{ $t("stepper.h2") }}
-          small {{ $t("stepper.d2") }}
+        v-stepper-step(:complete='stepper > 2', step='2') {{ isBooking ? $t("stepper.h2") : $t("stepper.h2T") }}
+          small {{ isBooking ? $t("stepper.d2") : $t("stepper.d2T") }}
         v-stepper-content.pr-0(
           step='2',
           v-if='isBooking',
@@ -133,31 +134,39 @@
                 style='font-weight: 700; min-width: 170px; text-align: right'
               ) {{ display_price }} ₽, {{ time }}→{{ newTime }}
             v-layout
-              v-btn.ma-2.mt-3.ml-0(outlined, @click='stepper = 1') Назад
+              v-btn.ma-2.mt-3.ml-0(outlined, @click='stepper = 1', x-large) Назад
               v-spacer
-              v-btn.ma-2.mt-3.ml-0(color='primary', @click='stepper = 3') К оплате
+              v-btn.ma-2.mt-3.ml-0(
+                color='primary',
+                @click='stepper = 3',
+                x-large
+              ) К оплате
             br
             br
         v-stepper-content.mt-12(step='2', v-else, style='margin: 0')
-          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')
+          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')#otp
             h3.t Введите номер парковочного талона
             v-otp-input(
               length='6',
-              type='number',
+              type='text',
               v-model='otp',
-              style='max-width: 400px',
-              @finish='isFinishedOTP()',
-              :disabled='isLoadingOTP'
+              style='max-width: 260px',
+              @finish='FinishedOTP()',
+              :disabled='isLoadingOTP',
+              ref='otp',
+              id='otp'
             )
-            v-btn(
-              :disabled='!isActiveOTP()',
-              :loading='isLoadingOTP',
-              x-large,
-              color='primary'
-            ) Далее
-            v-btn(text, @click='stepper = 1', x-large) Назад
-        v-stepper-step(:complete='stepper > 3', step='3', v-if='isBooking') {{ $t("stepper.h3") }}
-          small {{ $t("stepper.d3") }}
+            v-layout
+              v-btn.ma-2.mt-3.ml-0(outlined, @click='stepper = 1', x-large) Назад
+              v-spacer
+              v-btn.ma-2.mt-3.ml-0(
+                :disabled='!isActiveOTP()',
+                :loading='isLoadingOTP',
+                x-large,
+                color='primary'
+              ) Далее
+        v-stepper-step(:complete='stepper > 3', step='3') {{ isBooking ? $t("stepper.h3") : $t("stepper.h3T") }}
+          small {{ isBooking ? $t("stepper.d3") : $t("stepper.d3T") }}
         v-stepper-content.pr-0(step='3', v-if='isBooking', style='margin: 0')
           v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='400px')
             v-form(v-model='form')
@@ -167,7 +176,12 @@
                     v-text-field(:rules='nameRules', label='Имя', required)
                 v-row
                   v-col.pl-0.pt-0.mt-0(cols='12', md='4')
-                    v-text-field(:rules='nameRules', label='E-mail', placeholder='Пишите, что пожелаете', required)
+                    v-text-field(
+                      :rules='nameRules',
+                      label='E-mail',
+                      placeholder='Пишите, что пожелаете',
+                      required
+                    )
             v-layout.pb-3(:style='isMobile ? "" : "max-width: 350px"')
               h3.h.pr-3(
                 style='font-weight: 700; min-width: 80px; text-align: left'
@@ -236,11 +250,7 @@
             v-card-text 
               h5.pt-4.mb-2(style='line-height: 85%') Производится оплата...
               v-progress-linear(indeterminate, color='white')
-        v-stepper-step(
-          color='green',
-          step='4',
-          v-if='isBooking'
-        ) {{ $t("stepper.h4") }}
+        v-stepper-step(color='green', step='4', v-if='isBooking') {{ $t("stepper.h4") }}
           small {{ $t("stepper.d4") }}
         v-stepper-content.pr-0(step='4', v-if='isBooking', style='margin: 0')
           v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')
@@ -250,8 +260,9 @@
               type='number',
               v-model='otp',
               readonly,
-              style='max-width: 260px')
-            h5.t.pt-2 Ждем вас к {{time}}. Время считается с момента приезда
+              style='max-width: 260px'
+            )
+            h5.t.pt-2 Ждем вас к {{ time }}. Время считается с момента приезда
         br
         br
         br
@@ -267,6 +278,7 @@ import * as VueGoogleMaps from 'vue2-google-maps'
 import { gmapApi } from 'vue2-google-maps'
 import { loaded } from 'vue2-google-maps'
 import { User } from '@/models/User'
+import { randomInt } from 'crypto'
 
 const AppStore = namespace('AppStore')
 const SnackbarStore = namespace('SnackbarStore')
@@ -319,6 +331,7 @@ export default class Home extends Vue {
 
   stepper = 1
   transition2secondDialog = false
+  transition2secondTimeDialog = false
   transition2fourthDialog = false
   colorTransition2fourth = false
   otp = '123456'
@@ -390,7 +403,19 @@ export default class Home extends Vue {
 
   transition2second(isBooking: boolean) {
     this.isBooking = isBooking
-    this.transition2secondDialog = true
+    this.transition2secondDialog = isBooking
+    this.transition2secondTimeDialog = !isBooking
+    if (!isBooking) {
+      this.transition2secondDialog = false
+      this.transition2secondTimeDialog = false
+      this.stepper = 2
+      this.isInfoWindowOpened = false
+      this.otp = ''
+      setTimeout(() => this.$refs.otp.$refs.input[0].focus())
+      // document.getElementById("#otp").focus()
+      return
+    }
+
     let date = new Date()
     this.time =
       date.getHours() +
@@ -400,13 +425,22 @@ export default class Home extends Vue {
         : date.getMinutes().toString())
     setTimeout(() => {
       this.transition2secondDialog = false
+      this.transition2secondTimeDialog = false
       this.stepper = 2
       this.isInfoWindowOpened = false
     }, 1500)
   }
 
+  RandomNumString() {
+    let result = ''
+    for (let i = 0; i < 6; i++)
+      result += Math.floor(Math.random() * 10).toString()
+    return result
+  }
+
   transition2fourth() {
     this.transition2fourthDialog = true
+    this.otp = this.RandomNumString()
     setTimeout(() => {
       this.colorTransition2fourth = true
       setTimeout(() => {
