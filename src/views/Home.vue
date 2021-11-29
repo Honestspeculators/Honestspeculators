@@ -94,7 +94,6 @@
                     color='primary'
                   )
                 v-card
-                  v-card-title.h(style='word-break: keep-all') Выберите сначала час, а потом минуты
                   v-time-picker(
                     v-model='time',
                     format='24hr',
