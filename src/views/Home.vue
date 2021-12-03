@@ -12,11 +12,11 @@
           small {{ $t("stepper.d1") }}
         v-stepper-content#stepper1(
           step='1',
-          style='margin: 0; padding: 0 !important'
+          :style="stepper === 1 ? 'margin: 0; padding: 0 !important' : 'padding: 0 !important'"
         )
           v-card.mb-12(flat, color='grey lighten-1', height='70vh')
             div
-              google-map#map(
+              google-map#map.mt-4(
                 v-if='google',
                 :center='mapCenter',
                 :zoom='mapZoom',
@@ -74,7 +74,7 @@
         v-stepper-content.pr-0(
           step='2',
           v-if='isBooking',
-          style='margin: 0; padding: 0'
+          :style="stepper === 2 ? 'margin: 0; padding: 0 !important' : 'padding: 0 !important'"
         )
           v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='380px')
             v-layout.pt-3.pr-3(:column='isMobile')
@@ -147,7 +147,7 @@
               ) К оплате
             br
             br
-        v-stepper-content.mt-1(step='2', v-else, style='margin: 0')
+        v-stepper-content.mt-1(step='2', v-else, :style="stepper === 2 ? 'margin: 0' : ''")
           v-card#otp.mb-12.pb-12.pa-md-8.pa-xs-2.pb-2(flat, height='380px')
             v-layout.pr-md-6(:column='isMobile')
               span.t(
@@ -210,8 +210,8 @@
               ) {{ !(!isActiveOTP() || isLoadingOTP) ? 'К оплате' : 'Далее'}}
         v-stepper-step(:complete='stepper > 3', step='3') {{ $t("stepper.h3") }}
           small {{ $t("stepper.d3") }}
-        v-stepper-content.pr-0(step='3', style='margin: 0')
-          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='400px')
+        v-stepper-content.pr-0(step='3', :style="stepper === 3 ? 'margin: 0' : ''")
+          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='420px')
             v-form(v-model='form', v-if='isBooking')
               v-container
                 v-row
@@ -300,7 +300,7 @@
               v-progress-linear(indeterminate, color='white')
         v-stepper-step(color='green', step='4') {{ $t("stepper.h4") }}
           small {{ $t("stepper.d4") }}
-        v-stepper-content.pr-0(step='4', style='margin: 0')
+        v-stepper-content.pr-0(step='4', :style="stepper === 4 ? 'margin: 0' : ''")
           v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')
             h3.h Номер заказа
             v-otp-input(
@@ -383,7 +383,7 @@ export default class Home extends Vue {
     )
   }
 
-  stepper = 1
+  stepper = 2
   transition2secondDialog = false
   transition2secondTimeDialog = false
   transition2fourthDialog = false
@@ -522,7 +522,7 @@ export default class Home extends Vue {
   }
 
   SliderChange() {
-    this.slider_price = this.slider_time * 60 * 2
+    this.slider_price = this.slider_time * 140 // price per hour
     this.number()
   }
 
@@ -673,14 +673,14 @@ button.white {
   padding: 16px 0px 16px 23px !important;
   padding-right: 0 !important;
 }
-#stepper1 > .v-stepper__wrapper {
-  padding: 0 !important;
-}
 #pay {
   transition: cubic-bezier(0.165, 0.84, 0.44, 1);
   transition-duration: 500ms;
 }
 .v-skeleton-loader__actions.v-skeleton-loader__bone {
   padding: 0 !important
+}
+#stepper1 > .v-stepper__wrapper {
+  padding: 16px 0px 0px 0px !important;
 }
 </style>
