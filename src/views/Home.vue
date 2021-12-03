@@ -458,8 +458,8 @@ export default class Home extends Vue {
     }
     // setTimeout(()=> {
     this.$vuetify.goTo('#to2', {
-      duration: 500+20,
-      offset: 25+16,
+      duration: 500,
+      offset: 25+16+20,
       easing: 'easeOutCubic',
     })
     // }, 10)
@@ -552,6 +552,11 @@ export default class Home extends Vue {
   }
 
   mounted() {
+    this.$vuetify.goTo('#to2', {
+      duration: 500,
+      offset: 0,
+      easing: 'easeOutCubic',
+    })
     interface Marker {
       position: {
         lat: number
