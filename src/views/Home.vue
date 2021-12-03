@@ -458,7 +458,7 @@ export default class Home extends Vue {
     }
     // setTimeout(()=> {
     this.$vuetify.goTo('#to2', {
-      duration: 500,
+      duration: 500+20,
       offset: 25+16,
       easing: 'easeOutCubic',
     })
