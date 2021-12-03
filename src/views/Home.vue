@@ -612,10 +612,22 @@ span.t > span {
   font-weight: 600;
 }
 
-p, .v-btn__content {
+p {
   font-family: 'Gilroy' !important;
   font-weight: 500;
   opacity: 0.9 !important;
+}
+
+button > .v-btn__content {
+  font-family: 'Gilroy' !important;
+  font-weight: 500;
+  opacity: 0.9 !important;
+}
+
+button.v-btn--loading > .v-btn__content {
+  font-family: 'Gilroy' !important;
+  font-weight: 500;
+  opacity: 0 !important;
 }
 
 .slide-fade-enter-active {
