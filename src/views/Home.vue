@@ -4,7 +4,7 @@
   v-layout(column, justify-center, align-center)
     v-container(justify-left)
       h1.h.mt-md-12.pt-sm-2.pt-xs-2 {{ $t("header") }}
-      h3.t.pt-8 {{ $t("description") }}
+      h3.t.pt-8(style='font-weight: 600') {{ $t("description") }}
       br
       h6.t {{ $t("disclaimer") }}
       v-stepper#to2.mt-4(v-model='stepper', vertical, color='primary')
@@ -135,7 +135,7 @@
               v-spacer
               span.t(style='min-width: 100px; align-self: center') Итого
               h3.h.pr-3(
-                style='font-weight: 700; min-width: 170px; text-align: right'
+                style='font-weight: 600; min-width: 170px; text-align: right'
               ) {{ display_price }} ₽, {{ time }}→{{ newTime }}
             v-layout
               v-btn.ma-2.mt-3.ml-0(outlined, @click='stepper = 1', x-large) Назад
@@ -152,7 +152,8 @@
             v-layout.pr-md-6(:column='isMobile')
               span.t(
                 :style='isMobile ? "min-width: 200px; align-self: baseline; z-index: 1" : "min-width: 200px; align-self: center; z-index: 1"'
-              ) Введите номер парковочного талона
+              )
+                span Введите номер парковочного талона
               v-spacer(:v-if='isMobile')
               v-otp-input#otp(
                 length='6',
@@ -167,7 +168,8 @@
             v-layout.pt-6.pr-md-6(:column='isMobile')
               span.t(
                 :style='isMobile ? "min-width: 200px; align-self: baseline; z-index: 1" : "min-width: 200px; align-self: center; z-index: 1"'
-              ) На сколько продлить время парковки (часы)
+              )
+                span На сколько продлить время парковки (часы)
               v-container.mt-4(row, style='padding: 0')
                 v-slider.mt-8(
                   v-model='slider_time',
@@ -188,13 +190,13 @@
               span.t(style='min-width: 100px; align-self: center') Итого
               h3.h.pr-3(
                 v-if='!(!isActiveOTP() || isLoadingOTP)',
-                style='font-weight: 700; min-width: 170px; text-align: right'
+                style='font-weight: 600; min-width: 170px; text-align: right'
               ) {{ display_price }} ₽, {{ time }}→{{ newTime }}
               v-skeleton-loader.pr-3(
                 v-else,
                 v-bind='attrs',
                 type='actions',
-                style='font-weight: 700; min-width: 170px; text-align: right'
+                style='font-weight: 600; min-width: 170px; text-align: right'
               ) 
             v-layout
               v-btn.ma-2.mt-3.ml-0(outlined, @click='stepper = 1', x-large) Назад
@@ -230,11 +232,11 @@
                     )
             v-layout.pb-3(:style='isMobile ? "" : "max-width: 350px"')
               h3.h.pr-3(
-                style='font-weight: 700; min-width: 80px; text-align: left'
+                style='font-weight: 600; min-width: 80px; text-align: left'
               ) {{ time }}→{{ newTime }}
               v-spacer
               h3.h.pr-3(
-                style='font-weight: 700; min-width: 80px; text-align: right'
+                style='font-weight: 600; min-width: 80px; text-align: right'
               ) {{ display_price }} ₽
             v-container#pay.pl-0(
               :style='(form || !isBooking) ? "filter: none" : "filter: grayscale(1)"'
@@ -252,7 +254,7 @@
               br
               v-btn.mt-8.mt-md-12.pl-0(
                 icon,
-                :disabled='!form',
+                :disabled='!form && isBooking',
                 @click='transition2fourth',
                 style='width: 100%; max-width: min(350px, 85vw)'
               )
@@ -263,7 +265,7 @@
               br
               v-btn.mt-8.mt-md-12.pl-0(
                 icon,
-                :disabled='!form',
+                :disabled='!form && isBooking',
                 @click='transition2fourth',
                 style='width: 100%; max-width: min(350px, 85vw)'
               )
@@ -594,23 +596,26 @@ export default class Home extends Vue {
   font-weight: 600;
   color: #00349b !important;
 }
-.t,
 .v-stepper__label {
   font-family: 'Gilroy', 'WebFont' !important;
   font-weight: 600;
   color: rgba(0, 0, 0, 0.9) !important;
   line-height: 90% !important;
 }
-small, small.t {
-  font-family: 'Gilroy' !important;
-  font-weight: 600;
-  color: rgba(0, 0, 0, 0.9) !important;
-}
-
-p {
+.t, small, small.t {
   font-family: 'Gilroy' !important;
   font-weight: 500;
   color: rgba(0, 0, 0, 0.9) !important;
+  line-height: 90% !important;
+}
+span.t > span {
+  font-weight: 600;
+}
+
+p, .v-btn__content {
+  font-family: 'Gilroy' !important;
+  font-weight: 500;
+  opacity: 0.9 !important;
 }
 
 .slide-fade-enter-active {
