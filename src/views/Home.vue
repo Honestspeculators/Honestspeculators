@@ -76,7 +76,7 @@
           v-if='isBooking',
           :style="stepper === 2 ? 'margin: 0; padding: 0 !important' : 'padding: 0 !important'"
         )
-          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='380px')
+          v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='420px')
             v-layout.pt-3.pr-3(:column='isMobile')
               span.t(style='min-width: 260px; align-self: center; z-index: 1') 
                 span Время прибытия (приблизительно)
@@ -148,7 +148,7 @@
             br
             br
         v-stepper-content.mt-1(step='2', v-else, :style="stepper === 2 ? 'margin: 0' : ''")
-          v-card#otp.mb-12.pb-12.pa-md-8.pa-xs-2.pb-2(flat, height='380px')
+          v-card#otp.mb-12.pb-12.pa-md-8.pa-xs-2.pb-2.mt-4(flat, height='380px')
             v-layout.pr-md-6(:column='isMobile')
               span.t(
                 :style='isMobile ? "min-width: 200px; align-self: baseline; z-index: 1" : "min-width: 200px; align-self: center; z-index: 1"'
@@ -210,7 +210,7 @@
               ) {{ !(!isActiveOTP() || isLoadingOTP) ? 'К оплате' : 'Далее'}}
         v-stepper-step(:complete='stepper > 3', step='3') {{ $t("stepper.h3") }}
           small {{ $t("stepper.d3") }}
-        v-stepper-content.pr-0(step='3', :style="stepper === 3 ? 'margin: 0' : ''")
+        v-stepper-content.pr-0(step='3', style='margin: 0')
           v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='420px')
             v-form(v-model='form', v-if='isBooking')
               v-container
@@ -298,7 +298,7 @@
             v-card-text 
               h5.pt-4.mb-2(style='line-height: 85%') Производится оплата...
               v-progress-linear(indeterminate, color='white')
-        v-stepper-step(color='green', step='4') {{ $t("stepper.h4") }}
+        v-stepper-step(color='green', step='4', :complete='stepper === 4', complete-icon='check') {{ $t("stepper.h4") }}
           small {{ $t("stepper.d4") }}
         v-stepper-content.pr-0(step='4', :style="stepper === 4 ? 'margin: 0' : ''")
           v-card.mb-12.pb-12.pa-md-8.pa-xs-2.pt-4.pb-2(flat, height='200px')
@@ -348,8 +348,8 @@ export default class Home extends Vue {
   @AppStore.Mutation setUser!: (user: User) => void
   @SnackbarStore.Mutation setSnackbarError!: (error: string) => void
 
-  slider_price = 300
-  display_price = 360
+  slider_price = 420
+  display_price = 420
   slider_time = 3
   time = '12:20'
   maxSteps = 12
@@ -383,7 +383,7 @@ export default class Home extends Vue {
     )
   }
 
-  stepper = 2
+  stepper = 1
   transition2secondDialog = false
   transition2secondTimeDialog = false
   transition2fourthDialog = false
